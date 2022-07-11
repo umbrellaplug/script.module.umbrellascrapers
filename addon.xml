@@ -1,6 +1,6 @@
-<addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.7" provider-name="Umbrella">
+<addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.16" provider-name="Umbrella">
 	<requires>
-		<import addon="xbmc.python" version="0.0.16" />
+		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.myaccounts" version="2.0.5d" />
 	</requires>
