@@ -1,3 +1,7 @@
+[B][COLOR black]Update - v0.0.17 - July 10, 2022[/COLOR][/B]
+--[I]Remove some hosts that were causing numerous errors in logs.[/I]
+--[I]rlsbb and maxrls[/I]
+
 [B][COLOR black]Update - v0.0.16 - July 10, 2022[/COLOR][/B]
 --[I] Reverted to original clone of scrapers and re-added changes due to crashing errors for some[/I]
 
