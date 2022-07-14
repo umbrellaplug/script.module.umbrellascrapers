@@ -58,7 +58,7 @@
 		<setting id="provider.ext" type="bool" label="32131" default="false" />
 		<setting id="provider.extratorrent" type="bool" label="32106" default="false" />
 		<setting id="provider.eztv" type="bool" label="32107" default="true" />
-		<setting id="provider.glodls" type="bool" label="32108" default="true" />
+		<setting id="provider.glodls" type="bool" label="32108" default="false" />
 		<setting id="provider.idope" type="bool" label="32109" default="false" />
 		<setting id="provider.isohunt2" type="bool" label="32110" default="false" />
 		<setting id="provider.kickass2" type="bool" label="32111" default="false" />
