@@ -29,7 +29,7 @@ class source:
 		self.sources_append = self.sources.append
 		try:
 			self.title = data['tvshowtitle'].lower() if 'tvshowtitle' in data else data['title'].lower()
-			self.title = self.title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			self.title = self.title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			self.aliases = data['aliases']
 			self.year = data['year']
 			self.hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else self.year
@@ -105,7 +105,7 @@ class source:
 			self.total_seasons = total_seasons
 			self.bypass_filter = bypass_filter
 
-			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			self.aliases = data['aliases']
 			self.imdb = data['imdb']
 			self.year = data['year']

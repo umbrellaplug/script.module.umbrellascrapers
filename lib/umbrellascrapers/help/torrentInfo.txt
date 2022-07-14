@@ -18,9 +18,8 @@ bt4g (priority=3) v2 challenge as of 1-8-22, removed
 btcq (priority=3)
 btdb (priority=3) proxy change 1-13-21 for v2 challenge, dead site as of 7-3-21 and now removed
 btdig (priority=3) Captcha as of 5-26-21 and now removed
-btscene (priority=3) timeout least twice a week
 ext.to (priority=3) v2 challenge as of 2-15-21, proxy in use as of 3-2-22
-extratorrent (priority=4) uses cfscrape, removed 11-12-21 proxy returns cloudflare v2 challenge
+extratorrent (priority=4)
 eztv (priority=4) shows only, site does not do pack files
 glodls (priority=3)
 idope (priority=5)
@@ -37,7 +36,6 @@ torrentgalaxy (priority=4) uses cfscrape
 torrentquest (removed, mirror of magnetdl)
 torrenttm (priority=3) new as of 2-17-21, dead site as of 4-18-21 and now removed
 torrentz2 (priority=4)
-zooqle (priority=5)
 
 2 request html parsed sites (slow, priority=6-9):
 --------------------------------------------
@@ -54,11 +52,12 @@ yourbittorrent (priority=9)
 The following scrapers sit behind CloudFlare and 
 use the "cloudscraper" module by Venomous:
 --------------------------------------------
-maxrls (hoster) (removed)
+maxrls (removed)
 rapidmoviez (hoster)
-rlsbb (hoster) (removed)
+rlsbb (removed)
 scenerls (hoster)
-extratorrent (torrent) removed 11-12-21 proxy returns cloudflare v2 challenge
 limetorrents (torrent)
 torrentapi (torrent)
 torrentgalaxy (torrent)
+btscene (removed)
+zooqle (removed)

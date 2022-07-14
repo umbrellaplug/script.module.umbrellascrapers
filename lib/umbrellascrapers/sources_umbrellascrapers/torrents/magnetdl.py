@@ -29,7 +29,7 @@ class source:
 		append = sources.append
 		try:
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			if title == 'The Fuck-It List' or title == 'The F**k-It List': title = 'The Fxxk-It List'
 			if title == 'The End of the Fucking World' or title == 'The End of the F***ing World': title = 'The End of the Fxxxing World'
 			aliases = data['aliases']
@@ -105,7 +105,7 @@ class source:
 			self.total_seasons = total_seasons
 			self.bypass_filter = bypass_filter
 
-			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			if self.title == 'The End of the Fucking World' or self.title == 'The End of the F***ing World': self.title = 'The End of the Fxxxing World'
 			self.aliases = data['aliases']
 			self.imdb = data['imdb']

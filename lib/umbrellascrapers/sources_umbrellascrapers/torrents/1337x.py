@@ -32,7 +32,7 @@ class source:
 		self.items_append = self.items.append
 		try:
 			self.title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			self.title = self.title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			self.title = self.title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			self.aliases = data['aliases']
 			self.episode_title = data['title'] if 'tvshowtitle' in data else None
 			self.year = data['year']

@@ -8,7 +8,6 @@ from json import loads as jsloads
 import re
 from umbrellascrapers.modules import client
 from umbrellascrapers.modules import source_utils
-SERVER_ERROR = ('521 Origin Down', 'No results returned', 'Connection Time-out', 'Database maintenance', 'null')
 
 
 class source:
@@ -29,10 +28,10 @@ class source:
 	def sources(self, data, hostDict):
 		sources = []
 		if not data: return sources
-		append = sources.append
+		appendSources = sources.append
 		try:
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			aliases = data['aliases']
 			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
@@ -47,8 +46,8 @@ class source:
 				hdlr = year
 			# log_utils.log('url = %s' % url)
 			results = client.request(url, timeout=5)
-			if not results or any(value in results for value in SERVER_ERROR): return sources
-			files = jsloads(results)['streams']
+			try: files = jsloads(results)['streams']
+			except: return sources
 			_INFO = re.compile(r'👤.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
@@ -94,7 +93,7 @@ class source:
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				append({'provider': 'torrentio', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
+				appendSources({'provider': 'torrentio', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
 							'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
 			except:
 				source_utils.scraper_error('TORRENTIO')
@@ -105,15 +104,15 @@ class source:
 		if not data: return sources
 		sources_append = sources.append
 		try:
-			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			aliases = data['aliases']
 			imdb = data['imdb']
 			year = data['year']
 			season = data['season']
 			url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, data['episode']))
 			results = client.request(url, timeout=5)
-			if not results or any(value in results for value in SERVER_ERROR): return sources
-			files = jsloads(results)['streams']
+			try: files = jsloads(results)['streams']
+			except: return sources
 			_INFO = re.compile(r'👤.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()

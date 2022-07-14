@@ -32,7 +32,7 @@ class source:
 		try:
 			scraper = cfscrape.create_scraper()
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			aliases = data['aliases']
 			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
@@ -105,7 +105,7 @@ class source:
 			self.total_seasons = total_seasons
 			self.bypass_filter = bypass_filter
 
-			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			self.aliases = data['aliases']
 			self.imdb = data['imdb']
 			self.year = data['year']

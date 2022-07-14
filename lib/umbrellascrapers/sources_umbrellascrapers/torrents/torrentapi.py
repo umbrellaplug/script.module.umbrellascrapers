@@ -44,7 +44,7 @@ class source:
 			key = cache.get(self._get_token, 0.2) # 800 secs token is valid for
 
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			aliases = data['aliases']
 			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']

@@ -55,8 +55,8 @@
 		<setting id="provider.bitcq" type="bool" label="32137" default="false" />
 		<setting id="provider.bitlord" type="bool" label="32103" default="true" />
 		<setting id="provider.bitsearch" type="bool" label="32138" default="true" />
-		<setting id="provider.btscene" type="bool" label="32104" default="false" />
 		<setting id="provider.ext" type="bool" label="32131" default="false" />
+		<setting id="provider.extratorrent" type="bool" label="32106" default="false" />
 		<setting id="provider.eztv" type="bool" label="32107" default="true" />
 		<setting id="provider.glodls" type="bool" label="32108" default="true" />
 		<setting id="provider.idope" type="bool" label="32109" default="false" />
@@ -77,7 +77,6 @@
 		<setting id="provider.torrentz2" type="bool" label="32130" default="false" />
 		<setting id="provider.yourbittorrent" type="bool" label="32126" default="false" />
 		<setting id="provider.ytsmx" type="bool" label="32127" default="false" />
-		<setting id="provider.zooqle" type="bool" label="32128" default="false" />
 	</category>
 
 	<!-- Accounts-3 -->

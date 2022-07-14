@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  (updated 3-02-2022)
+# created by you know who for you know what
 """
 	UmbrellaScrapers Project
 """
@@ -12,14 +12,16 @@ from umbrellascrapers.modules import workers
 
 
 class source:
-	priority = 3
+	priority = 4
 	pack_capable = True
 	hasMovies = True
 	hasEpisodes = True
 	def __init__(self):
 		self.language = ['en']
-		self.base_link = "http://btscene.nl" # 7torr.com is a mirror of btscene, do not use
-		self.search_link = '/search?q=%s'
+		self.base_link = "https://extratorrent.unblockit.name"
+		self.msearch_link = '/search/?new=1&search=%s&s_cat=1'
+		self.tvsearch_link = '/search/?new=1&search=%s&s_cat=2'
+		# self.packsearch_link = '/search/?page=2&new=1&search=%s&s_cat=2' # page1 appears broken, scrape page2 only for packs
 		self.min_seeders = 1
 
 	def sources(self, data, hostDict):
@@ -28,7 +30,7 @@ class source:
 		self.sources_append = self.sources.append
 		try:
 			self.title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			self.title = self.title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			self.title = self.title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 			self.aliases = data['aliases']
 			self.episode_title = data['title'] if 'tvshowtitle' in data else None
 			self.year = data['year']
@@ -39,10 +41,11 @@ class source:
 			query = '%s %s' % (self.title, self.hdlr)
 			query = re.sub(r'[^A-Za-z0-9\s\.-]+', '', query)
 			urls = []
-			url = '%s%s' % (self.base_link, self.search_link % quote_plus(query))
+			url = self.tvsearch_link % quote_plus(query) if 'tvshowtitle' in data else self.msearch_link % quote_plus(query)
+			url = '%s%s' % (self.base_link, url)
 			urls.append(url)
-			urls.append(url + '&p=2')
-			# log_utils.log('urls = %s' % urls)
+			urls.append('%s%s' % (url, '&page=2')) # next page seems to be working once again
+
 			threads = []
 			append = threads.append
 			for url in urls:
@@ -51,23 +54,30 @@ class source:
 			[i.join() for i in threads]
 			return self.sources
 		except:
-			source_utils.scraper_error('BTSCENE')
+			source_utils.scraper_error('EXTRATORRENT')
 			return self.sources
 
 	def get_sources(self, url):
 		try:
-			result = client.request(url, timeout=7)
-			if not result or '<table' not in result: return
-			rows = client.parseDOM(result, 'tr', attrs={'class': 'row'})
+			# results = self.scraper.get(url, timeout=10).text
+			results = client.request(url, timeout=10)
+			if not results: return
+			rows = client.parseDOM(results, 'tr', attrs={'class': 'tlr'})
+			rows += client.parseDOM(results, 'tr', attrs={'class': 'tlz'})
 		except:
-			source_utils.scraper_error('BTSCENE')
+			source_utils.scraper_error('EXTRATORRENT')
+			return
+
 		for row in rows:
 			try:
-				if 'magnet:' not in row: continue
-				columns = re.findall(r'<td.*?>(.+?)</td', row, re.DOTALL) # site has improper closing tags
+				row = re.sub(r'\n', '', row)
+				row = re.sub(r'\t', '', row)
+				columns = re.findall(r'<td.*?>(.+?)</td>', row, re.DOTALL)
 
-				url = unquote_plus(columns[5]).replace('&amp;', '&')
-				url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				url = re.search(r'href\s*=\s*["\'](magnet:[^"\']+)["\']', columns[0], re.I).group(1)
+				url = unquote_plus(url).replace('&amp;', '&').replace('&amp;', '&').replace(' ', '.').split('&tr')[0] # some links on extratorrent dbl "&amp;amp;"
+				url = source_utils.strip_non_ascii_and_unprintable(url)
+				if url in str(self.sources): continue
 				hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
 				name = source_utils.clean_name(url.split('&dn=')[1])
 
@@ -76,38 +86,39 @@ class source:
 				if source_utils.remove_lang(name_info, self.check_foreign_audio): continue
 				if self.undesirables and source_utils.remove_undesirables(name_info, self.undesirables): continue
 
-				if not self.episode_title: #filter for eps returned in movie query (rare but movie and show exists for Run in 2020)
+				if not self.episode_title: # filter for eps returned in movie query (rare but movie and show exists for Run in 2020)
 					ep_strings = [r'[.-]s\d{2}e\d{2}([.-]?)', r'[.-]s\d{2}([.-]?)', r'[.-]season[.-]?\d{1,2}[.-]?']
 					name_lower = name.lower()
 					if any(re.search(item, name_lower) for item in ep_strings): continue
 
 				try:
-					seeders = int(columns[3].replace(',', ''))
+					seeders = int(columns[4].replace(',', ''))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
 				quality, info = source_utils.get_release_quality(name_info, url)
 				try:
-					dsize, isize = source_utils._size(columns[1])
+					dsize, isize = source_utils._size(columns[3])
 					info.insert(0, isize)
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				self.sources_append({'provider': 'btscene', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info,
+				self.sources_append({'provider': 'extratorrent', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info,
 												'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
 			except:
-				source_utils.scraper_error('BTSCENE')
+				source_utils.scraper_error('EXTRATORRENT')
 
 	def sources_packs(self, data, hostDict, search_series=False, total_seasons=None, bypass_filter=False):
 		self.sources = []
 		if not data: return self.sources
 		self.sources_append = self.sources.append
 		try:
+			# self.scraper = cfscrape.create_scraper()
 			self.search_series = search_series
 			self.total_seasons = total_seasons
 			self.bypass_filter = bypass_filter
 
-			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU')
 			self.aliases = data['aliases']
 			self.imdb = data['imdb']
 			self.year = data['year']
@@ -119,12 +130,12 @@ class source:
 			query = re.sub(r'[^A-Za-z0-9\s\.-]+', '', self.title)
 			if search_series:
 				queries = [
-						self.search_link % quote_plus(query + ' Season'),
-						self.search_link % quote_plus(query + ' Complete')]
+						self.tvsearch_link % quote_plus(query + ' Season'),
+						self.tvsearch_link % quote_plus(query + ' Complete')]
 			else:
 				queries = [
-						self.search_link % quote_plus(query + ' S%s' % self.season_xx),
-						self.search_link % quote_plus(query + ' Season %s' % self.season_x)]
+						self.tvsearch_link % quote_plus(query + ' S%s' % self.season_xx),
+						self.tvsearch_link % quote_plus(query + ' Season %s' % self.season_x)]
 			threads = []
 			append = threads.append
 			for url in queries:
@@ -134,24 +145,27 @@ class source:
 			[i.join() for i in threads]
 			return self.sources
 		except:
-			source_utils.scraper_error('BTSCENE')
+			source_utils.scraper_error('EXTRATORRENT')
 			return self.sources
 
 	def get_sources_packs(self, link):
 		try:
-			result = client.request(link, timeout=7)
-			if not result or '<table' not in result: return
-			rows = client.parseDOM(result, 'tr', attrs={'class': 'row'})
+			results = client.request(link, timeout=10)
+			if not results: return
+			rows = client.parseDOM(results, 'tr', attrs={'class': 'tlr'})
+			rows += client.parseDOM(results, 'tr', attrs={'class': 'tlz'})
 		except:
-			source_utils.scraper_error('BTSCENE')
+			source_utils.scraper_error('EXTRATORRENT')
 			return
 		for row in rows:
 			try:
-				if 'magnet:' not in row: continue
-				columns = re.findall(r'<td.*?>(.+?)</td', row, re.DOTALL) # site has improper closing tags
-
-				url = unquote_plus(columns[5]).replace('&amp;', '&')
-				url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				row = re.sub(r'\n', '', row)
+				row = re.sub(r'\t', '', row)
+				columns = re.findall(r'<td.*?>(.+?)</td>', row, re.DOTALL)
+				url = re.search(r'href\s*=\s*["\'](magnet:[^"\']+)["\']', columns[0], re.I).group(1)
+				url = unquote_plus(url).replace('&amp;', '&').replace('&amp;', '&').replace(' ', '.').split('&tr')[0] # some links on extratorrent dbl "&amp;amp;"
+				url = source_utils.strip_non_ascii_and_unprintable(url)
+				if url in str(self.sources): continue
 				hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
 				name = source_utils.clean_name(url.split('&dn=')[1])
 
@@ -172,22 +186,23 @@ class source:
 				name_info = source_utils.info_from_name(name, self.title, self.year, season=self.season_x, pack=package)
 				if source_utils.remove_lang(name_info, self.check_foreign_audio): continue
 				if self.undesirables and source_utils.remove_undesirables(name_info, self.undesirables): continue
+
 				try:
-					seeders = int(columns[3].replace(',', ''))
+					seeders = int(columns[4].replace(',', ''))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
 				quality, info = source_utils.get_release_quality(name_info, url)
 				try:
-					dsize, isize = source_utils._size(columns[1])
+					dsize, isize = source_utils._size(columns[3])
 					info.insert(0, isize)
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				item = {'provider': 'btscene', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
+				item = {'provider': 'extratorrent', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
 							'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'package': package}
 				if self.search_series: item.update({'last_season': last_season})
 				elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
 				self.sources_append(item)
 			except:
-				source_utils.scraper_error('BTSCENE')
+				source_utils.scraper_error('EXTRATORRENT')

@@ -19,7 +19,7 @@ class source:
 	hasEpisodes = True
 	def __init__(self):
 		self.language = ['en']
-		self.base_link = "https://www.limetorrents.pro"
+		self.base_link = "https://www.limetorrents.lol"
 		# self.base_link = "https://limetorrents.proxyninja.org" # if ever needed
 		self.tvsearch = '/search/tv/{0}/1/'
 		self.moviesearch = '/search/movies/{0}/1/'

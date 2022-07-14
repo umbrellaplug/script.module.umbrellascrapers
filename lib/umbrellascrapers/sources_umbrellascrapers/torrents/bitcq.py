@@ -92,7 +92,7 @@ class source:
 			self.search_series = search_series
 			self.total_seasons = total_seasons
 			self.bypass_filter = bypass_filter
-			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 			self.aliases = data['aliases']
 			self.imdb = data['imdb']
 			self.year = data['year']
