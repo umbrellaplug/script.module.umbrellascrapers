@@ -38,7 +38,7 @@ class source:
 			year = data['year']
 			aliases = data['aliases']
 			if content_type == 'tvshow':
-				title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+				title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$','s')
 				episode_title = None
 				years = None
 				season = int(data.get('season'))
@@ -50,7 +50,8 @@ class source:
 				episode_title = data['title']
 				years = [str(int(year)-1), str(year), str(int(year)+1)]
 				hdlr = year
-				query = '"%s" %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', title), ','.join(years))
+				#query = '"%s" %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', title), ','.join(years)) #years causing valid results to get dropped.
+				query = '%s' % re.sub(r'[^A-Za-z0-9\s\.-]+', '', title)
 			# log_utils.log('query = %s' % query)
 
 			url, params = self._translate_search(query)
